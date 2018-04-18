@@ -2,14 +2,11 @@ package server;
 
 import common.ConfigManager;
 import common.Utility;
-import server.rmi.FileInformation;
-import server.rmi.IFileInformation;
+import common.IFileInformationServer;
+import server.rmi.FileInformationServer;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.Naming;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -30,7 +27,7 @@ public class Server {
         registry = LocateRegistry.createRegistry(port);
 
         // start interserver RMI
-        IFileInformation stub = new FileInformation();
+        IFileInformationServer stub = new FileInformationServer();
         Naming.rebind(Utility.getRMIEndpoint(Utility.getIP(), port, ConfigManager.create().getValue(ConfigManager.SERVER_BINDING_NAME)), stub);
     }
 }

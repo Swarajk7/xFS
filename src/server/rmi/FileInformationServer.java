@@ -1,13 +1,14 @@
 package server.rmi;
 
+import common.IFileInformationServer;
 import model.ClientDetails;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-public class FileInformation extends UnicastRemoteObject implements IFileInformation {
-    public FileInformation() throws RemoteException {
+public class FileInformationServer extends UnicastRemoteObject implements IFileInformationServer {
+    public FileInformationServer() throws RemoteException {
         super();
     }
 
@@ -22,7 +23,7 @@ public class FileInformation extends UnicastRemoteObject implements IFileInforma
     }
 
     @Override
-    public void Ping(ClientDetails clientDetails) throws RemoteException {
+    public void ping(ClientDetails clientDetails) throws RemoteException {
         System.out.println("Ping()");
     }
 }

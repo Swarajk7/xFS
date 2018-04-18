@@ -15,7 +15,7 @@ public class ConfigManager {
     public static final String SERVER_IP_ADDRESS = "serveripaddress";
 
     //fix below line for better lookup.. don't hardcode
-    private static String filename = "server_config.properties";
+    private static String filename = "C:\\Users\\sk111\\IdeaProjects\\xFS\\src\\server_config.properties";
     private Properties prop;
     private static ConfigManager obj = null;
 
