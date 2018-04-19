@@ -3,10 +3,8 @@ package server;
 import common.ConfigManager;
 import common.Utility;
 import common.IFileInformationServer;
-import model.ClientDetails;
-import server.data.ClientHeartbeat;
-import server.data.FileClientMapper;
 import server.rmi.FileInformationServer;
+import server.threads.RemoveDisConnectedClientsThread;
 
 import java.io.IOException;
 import java.rmi.Naming;
@@ -19,6 +17,7 @@ public class Server {
     public static void main(String[] args) {
         try {
             startRMIServer(Utility.parseAndGetPortNumber(args));
+            new RemoveDisConnectedClientsThread();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

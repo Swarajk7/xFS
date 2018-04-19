@@ -6,6 +6,8 @@ import model.ClientDetails;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHeartbeat {
@@ -37,5 +39,11 @@ public class ClientHeartbeat {
         LocalDateTime tempDateTime = LocalDateTime.now();
         long seconds = heartBeatTime.until(tempDateTime, ChronoUnit.SECONDS);
         return seconds > thresholdTimeOutForClient;
+    }
+
+    public static ArrayList<ClientDetails> getClientList() {
+        ArrayList<ClientDetails> clientDetailsArrayList = new ArrayList<>();
+        clientDetailsArrayList.addAll(clientHeartBeat.keySet());
+        return clientDetailsArrayList;
     }
 }
