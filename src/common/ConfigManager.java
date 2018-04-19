@@ -13,6 +13,7 @@ public class ConfigManager {
     public static final String SERVER_BINDING_NAME = "serverbindingname";
     public static final String SERVER_PORT_NUMBER = "serverportnumber";
     public static final String SERVER_IP_ADDRESS = "serveripaddress";
+    public static final String THRESHOLD_TIMEOUT_FOR_CLIENT = "thresholdtimeoutforclient";
 
     //fix below line for better lookup.. don't hardcode
     private static String filename = "C:\\Users\\sk111\\IdeaProjects\\xFS\\src\\server_config.properties";

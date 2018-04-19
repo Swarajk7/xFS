@@ -10,11 +10,13 @@ public class Utility {
         System.out.println("Your current RMI address : " + rmi_end_point);
         return rmi_end_point;
     }
+
     public static String getIP() throws UnknownHostException {
         String ip = InetAddress.getLocalHost().getHostAddress();
         System.out.println("Your current IP address : " + ip);
         return ip;
     }
+
     public static int parseAndGetPortNumber(String[] args) {
         //take port number as command line argument
         //System.out.println(args.length);
