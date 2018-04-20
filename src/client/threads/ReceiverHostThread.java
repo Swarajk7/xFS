@@ -1,16 +1,18 @@
 package client.threads;
 
 import client.FileDownloader;
+import model.ClientDetails;
 
 import java.io.IOException;
 
-public class DownloadHostThread implements Runnable {
+public class ReceiverHostThread implements Runnable {
     private int port;
-    private String filepath;
+    private String filepath,ip;
 
-    public DownloadHostThread(int port, String filepath) {
-        this.port = port;
+    public ReceiverHostThread(ClientDetails receiverClientDetails, String filepath) {
+        this.port = receiverClientDetails.getPort();
         this.filepath = filepath;
+        this.ip = receiverClientDetails.getIp();
         new Thread(this, "DownloadHostThread:port:" + port).start();
     }
 
@@ -18,7 +20,7 @@ public class DownloadHostThread implements Runnable {
     public void run() {
         FileDownloader fileDownloader = new FileDownloader();
         try {
-            fileDownloader.send(port, filepath);
+            fileDownloader.send(ip, port, filepath);
         } catch (IOException e) {
             e.printStackTrace();
         }

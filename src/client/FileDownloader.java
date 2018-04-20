@@ -9,38 +9,11 @@ import java.net.Socket;
 
 // takenFrom: https://stackoverflow.com/questions/9520911/java-sending-and-receiving-file-byte-over-sockets
 public class FileDownloader {
-    public void send(int port, String pathforthefiletosend) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(port);
+    public void send(String host, int port, String pathforthefiletosend) throws IOException {
 
-        Socket socket = null;
-        InputStream in = null;
-        OutputStream out = null;
+        Socket socket = new Socket(host, port);
 
-        socket = serverSocket.accept();
-        in = socket.getInputStream();
-
-        out = new FileOutputStream(pathforthefiletosend);
-
-        byte[] bytes = new byte[16 * 1024];
-
-        int count;
-        while ((count = in.read(bytes)) > 0) {
-            out.write(bytes, 0, count);
-        }
-
-        out.close();
-        in.close();
-        socket.close();
-        serverSocket.close();
-    }
-
-    public void download(String downloadHost, int port, String pathtostorethedownloadedfile) throws IOException {
-        Socket socket = null;
-        String host = downloadHost;
-
-        socket = new Socket(host, port);
-
-        File file = new File(pathtostorethedownloadedfile);
+        File file = new File(pathforthefiletosend);
         // Get the size of the file
         long length = file.length();
         byte[] bytes = new byte[16 * 1024];
@@ -55,5 +28,25 @@ public class FileDownloader {
         out.close();
         in.close();
         socket.close();
+    }
+
+    public void download(int port, String pathtostorethedownloadedfile) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(port);
+
+        Socket socket = serverSocket.accept();
+        InputStream in = socket.getInputStream();
+        OutputStream out = new FileOutputStream(pathtostorethedownloadedfile);
+
+        byte[] bytes = new byte[16 * 1024];
+
+        int count;
+        while ((count = in.read(bytes)) > 0) {
+            out.write(bytes, 0, count);
+        }
+
+        out.close();
+        in.close();
+        socket.close();
+        serverSocket.close();
     }
 }

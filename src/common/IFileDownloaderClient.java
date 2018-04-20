@@ -6,5 +6,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface IFileDownloaderClient extends Remote {
-    int requestDownloadFile(ClientDetails clientDetails) throws RemoteException;
+    // here send the receiver's socket ip and port number and the needed file name.
+    void requestFileSend(ClientDetails clientDetails, String filename) throws RemoteException;
 }
