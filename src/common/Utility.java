@@ -20,8 +20,8 @@ public class Utility {
     public static int parseAndGetPortNumber(String[] args) {
         //take port number as command line argument
         //System.out.println(args.length);
-        if (args.length != 1) {
-            System.out.println("Error.\nUsage java Server port_no");
+        if (args.length < 1) {
+            System.out.println("Error.\nUsage java Server port_no unique_client_id");
             System.exit(1);
         }
         int port = -1;
@@ -33,5 +33,16 @@ public class Utility {
             System.exit(1);
         }
         return port;
+    }
+
+    public static String parseAndGetClientId(String[] args) {
+        //take port number as command line argument
+        //System.out.println(args.length);
+        if (args.length != 2) {
+            System.out.println("Error.\nUsage java Server port_no unique_client_id");
+            System.exit(1);
+        }
+        String clientid = args[1];
+        return clientid;
     }
 }

@@ -1,26 +1,67 @@
 package client;
 
 
+import client.data.DownloadRequestQueue;
+import client.rmi.FileDownloaderClient;
+import client.threads.FileReceiverHostThread;
+import client.threads.FileSenderThread;
 import client.threads.PingServerThread;
-import client.threads.ReceiverHostThread;
+import common.ConfigManager;
+import common.IFileDownloaderClient;
+import common.IFileInformationServer;
 import common.Utility;
 import model.ClientDetails;
 
 import java.io.IOException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class Client {
+    private static Registry registry;
+
     // register ping thread
     public static void main(String[] args) {
         try {
-            //new PingServerThread(Utility.parseAndGetPortNumber(args), "C:\\Users\\sk111\\IdeaProjects\\xFS\\src\\client");
-            if(Utility.parseAndGetPortNumber(args) == 6005) {
-                new ReceiverHostThread(new ClientDetails("10.0.0.210", 6006), "C:\\Users\\sk111\\Documents\\Random\\code\\input.txt");
-            } else {
-                FileDownloader fileDownloader = new FileDownloader();
-                fileDownloader.download(6006, "C:\\Users\\sk111\\Documents\\Random\\code\\inpu2t.txt");
+            ConfigManager configManager = ConfigManager.create();
+            String filepath = configManager.getValue(ConfigManager.BASE_PATH) + Utility.parseAndGetClientId(args);
+            int port = Utility.parseAndGetPortNumber(args);
+            new PingServerThread(port, filepath);
+            for (int i = 0; i < DownloadRequestQueue.getMaxConcurrentDownload(); i++)
+                new FileSenderThread(filepath,i);
+            startRMIServer(port);
+            /*
+            Build client logic here.
+            1. DownloadFile(filename) -
+                -- need to build the logic here.
+                -- 1. FindFile(filename) - by calling Server's RMI endpoint.
+                -- 2. Ask Each peer for Load.
+                -- 3. Chose a peer.
+                -- 4. Download the file from that peer.
+                -- 5. Verify Checksum.
+                -- 5. Detect failure.
+             */
+            if(port == 6005) {
+                String endPoint = Utility.getRMIEndpoint("10.0.0.210", 6006,
+                        configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
+                IFileDownloaderClient stub = (IFileDownloaderClient) Naming.lookup(endPoint);
+                new FileReceiverHostThread(new ClientDetails("10.0.0.210", 8000), filepath + "/a.txt");
+                stub.requestFileSend(new ClientDetails("10.0.0.210", 8000), "a.txt");
             }
         } catch (IOException e) {
             System.out.println("Check if Client is able to access the config file.");
+        } catch (NotBoundException e) {
+            System.out.println("Not able to do RMI call.");
         }
+    }
+
+    private static void startRMIServer(int port) throws IOException {
+        // start rmiregistry
+        registry = LocateRegistry.createRegistry(port);
+
+        // start interserver RMI
+        IFileDownloaderClient stub = new FileDownloaderClient();
+        Naming.rebind(Utility.getRMIEndpoint(Utility.getIP(), port, ConfigManager.create().getValue(ConfigManager.CLIENT_BINDING_NAME)), stub);
     }
 }

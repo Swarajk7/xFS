@@ -15,13 +15,19 @@ public class PingServerThread implements Runnable {
     private String filepath;
     public PingServerThread(int port, String filepath) throws IOException {
         configManager = ConfigManager.create();
-        clientDetails = new ClientDetails(Utility.getIP(),port);
+        clientDetails = new ClientDetails(Utility.getIP(), port);
         this.filepath = filepath;
         new Thread(this, "Client Side Thread for Ping Server!!").start();
     }
 
     @Override
     public void run() {
+        /*
+        1. On start update the server about list of files.
+        2. Then check continuously ping the server.
+        3. If ping fails, set shouldUpdateServerWithListOfFiles to true.
+        4. Update the server again after ping is successful.
+         */
         boolean shouldUpdateServerWithListOfFiles = true;
         while (true) {
             try {

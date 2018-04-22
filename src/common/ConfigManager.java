@@ -14,6 +14,9 @@ public class ConfigManager {
     public static final String SERVER_PORT_NUMBER = "serverportnumber";
     public static final String SERVER_IP_ADDRESS = "serveripaddress";
     public static final String THRESHOLD_TIMEOUT_FOR_CLIENT = "thresholdtimeoutforclient";
+    public static final String NUMBER_OF_UPLOAD_THREADS = "numberofuploadthreads";
+    public static final String BASE_PATH = "basepath";
+    public static final String CLIENT_BINDING_NAME = "bindingnameforclient";
 
     //fix below line for better lookup.. don't hardcode
     private static String filename = "C:\\Users\\sk111\\IdeaProjects\\xFS\\src\\server_config.properties";

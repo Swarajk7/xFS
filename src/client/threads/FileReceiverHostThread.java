@@ -5,11 +5,11 @@ import model.ClientDetails;
 
 import java.io.IOException;
 
-public class ReceiverHostThread implements Runnable {
+public class FileReceiverHostThread implements Runnable {
     private int port;
     private String filepath,ip;
 
-    public ReceiverHostThread(ClientDetails receiverClientDetails, String filepath) {
+    public FileReceiverHostThread(ClientDetails receiverClientDetails, String filepath) {
         this.port = receiverClientDetails.getPort();
         this.filepath = filepath;
         this.ip = receiverClientDetails.getIp();
@@ -20,7 +20,7 @@ public class ReceiverHostThread implements Runnable {
     public void run() {
         FileDownloader fileDownloader = new FileDownloader();
         try {
-            fileDownloader.send(ip, port, filepath);
+            fileDownloader.download(port, filepath);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package server.threads;
 
-import client.Client;
 import common.ConfigManager;
 import model.ClientDetails;
 import server.data.ClientHeartbeat;
@@ -8,8 +7,6 @@ import server.data.FileClientMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
 
 public class RemoveDisConnectedClientsThread implements Runnable {
     private int threshold;
@@ -21,6 +18,10 @@ public class RemoveDisConnectedClientsThread implements Runnable {
 
     @Override
     public void run() {
+        /*
+        1. Check for all client's last hearbeat status.
+        2. If it is more than 10 seconds than the current time, delete the client from FileMapping.
+         */
         while (true) {
             try {
                 ArrayList<ClientDetails> clientDetailsArray = ClientHeartbeat.getClientList();
