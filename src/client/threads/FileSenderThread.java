@@ -9,10 +9,8 @@ import common.ConfigManager;
 import java.io.IOException;
 
 public class FileSenderThread implements Runnable {
-    private  final String filepath;
-    public FileSenderThread(String filepath,int countid) {
+    public FileSenderThread(int countid) {
         String name = "FileSenderThread" + countid;
-        this.filepath = filepath;
         new Thread(this, name).start();
     }
 
@@ -35,10 +33,12 @@ public class FileSenderThread implements Runnable {
             } else {
                 FileDownloader downloader = new FileDownloader();
                 try {
-                    String path = this.filepath + item.getFilename();
+                    String path = FileHandler.getFilePathForFileName(item.getFilename());
                     downloader.send(item.getIp(), item.getPort(), path);
                 } catch (IOException e) {
                     System.out.println("Thread Name:" + this.toString() + " " + e.getMessage());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
                 DownloadRequestQueue.finishProcessingItem();
             }

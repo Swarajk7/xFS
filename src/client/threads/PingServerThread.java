@@ -12,11 +12,11 @@ import java.rmi.Naming;
 public class PingServerThread implements Runnable {
     private ConfigManager configManager;
     private ClientDetails clientDetails;
-    private String filepath;
-    public PingServerThread(int port, String filepath) throws IOException {
+    private String folderpath;
+    public PingServerThread(int port) throws IOException {
         configManager = ConfigManager.create();
         clientDetails = new ClientDetails(Utility.getIP(), port);
-        this.filepath = filepath;
+        this.folderpath = FileHandler.getBasePath();
         new Thread(this, "Client Side Thread for Ping Server!!").start();
     }
 
@@ -42,7 +42,7 @@ public class PingServerThread implements Runnable {
                 if (shouldUpdateServerWithListOfFiles) {
                     // tell the server about your files by calling appropriate endpoint.
                     // if sucessful set shouldUpdateServerWithListOfFiles to false.
-                    String[] files = FileHandler.getFileNames(filepath);
+                    String[] files = FileHandler.getFileNames(folderpath);
                     fileInformation.updateList(clientDetails, files);
                     shouldUpdateServerWithListOfFiles = false;
                     System.out.println("Updated Server With List of Files.");

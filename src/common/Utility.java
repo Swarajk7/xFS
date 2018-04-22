@@ -6,9 +6,8 @@ import java.net.UnknownHostException;
 
 public class Utility {
     public static String getRMIEndpoint(String ip, int port, String binding_name) {
-        String rmi_end_point = "rmi://" + ip + ":" + port + "/" + binding_name;
-        System.out.println("Your current RMI address : " + rmi_end_point);
-        return rmi_end_point;
+        //System.out.println("Your current RMI address : " + rmi_end_point);
+        return "rmi://" + ip + ":" + port + "/" + binding_name;
     }
 
     public static String getIP() throws UnknownHostException {
@@ -42,7 +41,6 @@ public class Utility {
             System.out.println("Error.\nUsage java Server port_no unique_client_id");
             System.exit(1);
         }
-        String clientid = args[1];
-        return clientid;
+        return args[1];
     }
 }

@@ -24,12 +24,11 @@ public class Client {
     // register ping thread
     public static void main(String[] args) {
         try {
-            ConfigManager configManager = ConfigManager.create();
-            String filepath = configManager.getValue(ConfigManager.BASE_PATH) + Utility.parseAndGetClientId(args);
+            setBasePath(Utility.parseAndGetClientId(args));
             int port = Utility.parseAndGetPortNumber(args);
-            new PingServerThread(port, filepath);
+            new PingServerThread(port);
             for (int i = 0; i < DownloadRequestQueue.getMaxConcurrentDownload(); i++)
-                new FileSenderThread(filepath,i);
+                new FileSenderThread(i);
             startRMIServer(port);
             /*
             Build client logic here.
@@ -42,17 +41,19 @@ public class Client {
                 -- 5. Verify Checksum.
                 -- 5. Detect failure.
              */
-            if(port == 6005) {
+            if (port == 6005) {
                 String endPoint = Utility.getRMIEndpoint("10.0.0.210", 6006,
-                        configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
+                        "client");
                 IFileDownloaderClient stub = (IFileDownloaderClient) Naming.lookup(endPoint);
-                new FileReceiverHostThread(new ClientDetails("10.0.0.210", 8000), filepath + "/a.txt");
+                new FileReceiverHostThread(new ClientDetails("10.0.0.210", 8000), "a.txt");
                 stub.requestFileSend(new ClientDetails("10.0.0.210", 8000), "a.txt");
             }
         } catch (IOException e) {
             System.out.println("Check if Client is able to access the config file.");
         } catch (NotBoundException e) {
             System.out.println("Not able to do RMI call.");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -63,5 +64,11 @@ public class Client {
         // start interserver RMI
         IFileDownloaderClient stub = new FileDownloaderClient();
         Naming.rebind(Utility.getRMIEndpoint(Utility.getIP(), port, ConfigManager.create().getValue(ConfigManager.CLIENT_BINDING_NAME)), stub);
+    }
+
+    private static void setBasePath(String clientid) throws IOException {
+        ConfigManager configManager = ConfigManager.create();
+        String filepath = configManager.getValue(ConfigManager.BASE_PATH) + clientid;
+        FileHandler.setBasepath(filepath);
     }
 }
