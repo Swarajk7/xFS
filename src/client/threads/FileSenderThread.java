@@ -31,6 +31,10 @@ public class FileSenderThread implements Runnable {
                     System.out.println("Thread Name:" + this.toString() + " " + ex.getMessage());
                 }
             } else {
+                /*
+                What if download fails?
+                What to do?
+                 */
                 FileDownloader downloader = new FileDownloader();
                 try {
                     String path = FileHandler.getFilePathForFileName(item.getFilename());

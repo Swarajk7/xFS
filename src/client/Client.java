@@ -41,6 +41,9 @@ public class Client {
                 -- 5. Verify Checksum.
                 -- 5. Detect failure.
              */
+            /*
+             Code below is just for testing the download.
+             */
             if (port == 6005) {
                 String endPoint = Utility.getRMIEndpoint("10.0.0.210", 6006,
                         "client");
