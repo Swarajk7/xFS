@@ -37,7 +37,7 @@ public class FileInformationServer extends UnicastRemoteObject implements IFileI
 
     @Override
     public void ping(ClientDetails clientDetails) throws RemoteException {
-        System.out.println("Ping()");
+        //System.out.println("Ping()");
         try {
             ClientHeartbeat.addHeartBeat(clientDetails);
         } catch (Exception e) {

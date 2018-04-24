@@ -34,15 +34,10 @@ public class FileDownloaderClient extends UnicastRemoteObject implements IFileDo
     }
 
 
-
-    public String getCheckSum(String filename) throws RemoteException
-    {
+    public String getCheckSum(String filename) throws RemoteException {
         try {
-            String path = FileHandler.getFilePathForFileName(filename);
-            String checkSum = FileHandler.calculateCheckSum(path);
-            return checkSum;
-        }
-        catch (Exception ex) {
+            return FileHandler.calculateCheckSum(filename);
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
             throw new RemoteException(ex.getMessage());
         }

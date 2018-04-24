@@ -41,6 +41,7 @@ public class FileClientMapper {
     }
 
     public static ClientDetails[] getListOfClients(String filename) {
+        if (!fileToClientDetailsMap.containsKey(filename)) return new ClientDetails[0];
         Set<ClientDetails> set = (Set) fileToClientDetailsMap.get(filename);
         return set.toArray(new ClientDetails[0]);
     }

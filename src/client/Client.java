@@ -33,7 +33,7 @@ public class Client {
             new PingServerThread(port);
             for (int i = 0; i < SendQueue.getMaxSupportedConcurrentSend(); i++) {
                 new FileSenderThread(i);
-                new FileDownloadThread(i, 6005 + i);
+                new FileDownloadThread(i, port + 100 + i);
             }
             startRMIServer(port);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

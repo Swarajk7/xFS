@@ -11,9 +11,8 @@ public class Utility {
     }
 
     public static String getIP() throws UnknownHostException {
-        String ip = InetAddress.getLocalHost().getHostAddress();
-        System.out.println("Your current IP address : " + ip);
-        return ip;
+        //System.out.println("Your current IP address : " + ip);
+        return InetAddress.getLocalHost().getHostAddress();
     }
 
     public static int parseAndGetPortNumber(String[] args) {
