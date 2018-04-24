@@ -34,40 +34,13 @@ public class FileDownloaderClient extends UnicastRemoteObject implements IFileDo
     }
 
 
-    // Taken from https://howtodoinjava.com/core-java/io/how-to-generate-sha-or-md5-file-checksum-hash-in-java/
+
     public String getCheckSum(String filename) throws RemoteException
     {
         try {
-            MessageDigest md5Digest = MessageDigest.getInstance("MD5");
             String path = FileHandler.getFilePathForFileName(filename);
-            //Get file input stream for reading the file content
-            FileInputStream fis = new FileInputStream(path);
-
-            //Create byte array to read data in chunks
-            byte[] byteArray = new byte[1024];
-            int bytesCount = 0;
-
-            //Read file data and update in message digest
-            while ((bytesCount = fis.read(byteArray)) != -1) {
-                md5Digest.update(byteArray, 0, bytesCount);
-            }
-            ;
-
-            //close the stream; We don't need it now.
-            fis.close();
-
-            //Get the hash's bytes
-            byte[] bytes = md5Digest.digest();
-
-            //This bytes[] has bytes in decimal format;
-            //Convert it to hexadecimal format
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.length; i++) {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-
-            //return complete hash
-            return sb.toString();
+            String checkSum = FileHandler.calculateCheckSum(path);
+            return checkSum;
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());
