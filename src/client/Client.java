@@ -1,14 +1,13 @@
 package client;
 
 
-import client.data.DownloadRequestQueue;
+import client.data.SendQueue;
 import client.rmi.FileDownloaderClient;
 import client.threads.FileReceiverHostThread;
 import client.threads.FileSenderThread;
 import client.threads.PingServerThread;
 import common.ConfigManager;
 import common.IFileDownloaderClient;
-import common.IFileInformationServer;
 import common.Utility;
 import model.ClientDetails;
 
@@ -27,7 +26,7 @@ public class Client {
             setBasePath(Utility.parseAndGetClientId(args));
             int port = Utility.parseAndGetPortNumber(args);
             new PingServerThread(port);
-            for (int i = 0; i < DownloadRequestQueue.getMaxConcurrentDownload(); i++)
+            for (int i = 0; i < SendQueue.getMaxSupportedConcurrentSend(); i++)
                 new FileSenderThread(i);
             startRMIServer(port);
             /*

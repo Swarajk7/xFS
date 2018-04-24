@@ -2,9 +2,8 @@ package client.threads;
 
 import client.FileDownloader;
 import client.FileHandler;
-import client.data.DownloadQueueItem;
-import client.data.DownloadRequestQueue;
-import common.ConfigManager;
+import client.data.SendQueueItem;
+import client.data.SendQueue;
 
 import java.io.IOException;
 
@@ -23,7 +22,7 @@ public class FileSenderThread implements Runnable {
         4. Repeat
          */
         while (true) {
-            DownloadQueueItem item = DownloadRequestQueue.getItemToDownload();
+            SendQueueItem item = SendQueue.getItemToSend();
             if (item == null) {
                 try {
                     Thread.sleep(100);
@@ -44,7 +43,7 @@ public class FileSenderThread implements Runnable {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                DownloadRequestQueue.finishProcessingItem();
+                SendQueue.finishSendingItem();
             }
         }
     }
