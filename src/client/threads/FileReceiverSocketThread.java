@@ -6,15 +6,14 @@ import model.ClientDetails;
 
 import java.io.IOException;
 
-public class FileReceiverHostThread implements Runnable {
+public class FileReceiverSocketThread extends Thread implements Runnable {
     private int port;
-    private String filename,ip;
+    private String filename, ip;
 
-    public FileReceiverHostThread(ClientDetails receiverClientDetails, String filename) {
+    public FileReceiverSocketThread(ClientDetails receiverClientDetails, String filename) {
         this.port = receiverClientDetails.getPort();
         this.filename = filename;
         this.ip = receiverClientDetails.getIp();
-        new Thread(this, "DownloadHostThread:port:" + port).start();
     }
 
     @Override
@@ -23,9 +22,10 @@ public class FileReceiverHostThread implements Runnable {
         try {
             fileDownloader.download(port, FileHandler.getFilePathForFileName(filename));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 }
+

@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DownloadQueue {
-    private static Queue<SendQueueItem> downloadQueue;
+    private static Queue<DownloadQueueItem> downloadQueue;
     private static int maxConcurrentDownload;
 
     static {
@@ -26,7 +26,11 @@ public class DownloadQueue {
         return maxConcurrentDownload;
     }
 
-    public static void addDownloadRequestToQueue(SendQueueItem item) {
+    public static void addDownloadRequestToQueue(DownloadQueueItem item) {
         downloadQueue.add(item);
+    }
+
+    public static DownloadQueueItem getItemToDownload() {
+        return downloadQueue.poll();
     }
 }

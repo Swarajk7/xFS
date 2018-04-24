@@ -6,4 +6,8 @@ public class DownloadQueueItem {
     public DownloadQueueItem(String fname) {
         this.filename = fname;
     }
+
+    public String getFilename() {
+        return filename;
+    }
 }
