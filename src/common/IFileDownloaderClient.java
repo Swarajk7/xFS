@@ -9,4 +9,5 @@ public interface IFileDownloaderClient extends Remote {
     // here send the receiver's socket ip and port number and the needed file name.
     void requestFileSend(ClientDetails clientDetails, String filename) throws RemoteException;
     int getLoad() throws RemoteException;
+    String getCheckSum(String filename) throws RemoteException;
 }

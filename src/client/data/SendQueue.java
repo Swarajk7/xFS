@@ -10,6 +10,7 @@ public class SendQueue {
     private static Queue<SendQueueItem> sendQueue;
     private static int maxConcurrentSend;
     private static AtomicInteger onGoingSends;
+    private int waitTime = 0;
 
     static {
         try {
