@@ -1,9 +1,12 @@
 package client;
 
 
+import client.data.DownloadQueue;
+import client.data.DownloadQueueItem;
+import client.data.MyInformation;
 import client.data.SendQueue;
 import client.rmi.FileDownloaderClient;
-import client.threads.FileReceiverThread;
+import client.threads.FileDownloadThread;
 import client.threads.FileSenderThread;
 import client.threads.PingServerThread;
 import common.ConfigManager;
@@ -11,9 +14,10 @@ import common.IFileDownloaderClient;
 import common.Utility;
 import model.ClientDetails;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -25,12 +29,20 @@ public class Client {
         try {
             setBasePath(Utility.parseAndGetClientId(args));
             int port = Utility.parseAndGetPortNumber(args);
+            MyInformation.setMyInformation(new ClientDetails(Utility.getIP(), port));
             new PingServerThread(port);
             for (int i = 0; i < SendQueue.getMaxSupportedConcurrentSend(); i++) {
                 new FileSenderThread(i);
-                new FileReceiverThread(i, 6005 + i);
+                new FileDownloadThread(i, 6005 + i);
             }
             startRMIServer(port);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                System.out.println("Enter FileName to Download?");
+                String filename = reader.readLine();
+                DownloadQueue.addDownloadRequestToQueue(new DownloadQueueItem(filename));
+                System.out.println("File: " + filename + " is added to queue.");
+            }
         } catch (IOException e) {
             System.out.println("Check if Client is able to access the config file.");
         } catch (Exception e) {

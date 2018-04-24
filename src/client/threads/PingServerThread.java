@@ -38,10 +38,10 @@ public class PingServerThread implements Runnable {
                                 configManager.getValue(ConfigManager.SERVER_BINDING_NAME)));
                 fileInformation.ping(clientDetails);
                 System.out.println("Successfully Pinged Server.");
-                // if ping is sucessful, server is up. :)
+                // if ping is successful, server is up. :)
                 if (shouldUpdateServerWithListOfFiles) {
                     // tell the server about your files by calling appropriate endpoint.
-                    // if sucessful set shouldUpdateServerWithListOfFiles to false.
+                    // if successful set shouldUpdateServerWithListOfFiles to false.
                     String[] files = FileHandler.getFileNames(folderpath);
                     fileInformation.updateList(clientDetails, files);
                     shouldUpdateServerWithListOfFiles = false;

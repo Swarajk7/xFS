@@ -16,10 +16,10 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.util.List;
 
-public class FileReceiverThread implements Runnable {
-    private int threadid,port;
+public class FileDownloadThread implements Runnable {
+    private int threadid, port;
 
-    public FileReceiverThread(int i,int port) {
+    public FileDownloadThread(int i, int port) {
         this.threadid = i;
         this.port = port;
         new Thread(this, "DownloadHostThread:port:" + threadid).start();
@@ -51,24 +51,27 @@ public class FileReceiverThread implements Runnable {
                     IFileInformationServer server_stub = (IFileInformationServer) Naming.lookup(endPoint);
                     List<ClientDetails> clientList = server_stub.find(downloadQueueItem.getFilename());
 
-
+                    ClientDetails chosenClientDetails = null;
+                    int minSeenYet = Integer.MAX_VALUE;
                     for (ClientDetails clientDetails : clientList) {
                         String clientEndPoint = Utility.getRMIEndpoint(clientDetails.getIp(), clientDetails.getPort(),
                                 configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
                         IFileDownloaderClient client_stub = (IFileDownloaderClient) Naming.lookup(clientEndPoint);
-                        client_stub.getLoad();
+                        int waittime = computeWaitTime(client_stub.getLoad(), clientDetails);
+                        if (waittime < minSeenYet) {
+                            chosenClientDetails = clientDetails;
+                        }
                     }
 
-                    //chose one client
-                    ClientDetails clientDetails = new ClientDetails("a", 1);
-                    String clientEndPoint = Utility.getRMIEndpoint(clientDetails.getIp(), clientDetails.getPort(),
+                    String clientEndPoint = Utility.getRMIEndpoint(chosenClientDetails.getIp(), chosenClientDetails.getPort(),
                             configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
                     IFileDownloaderClient client_stub = (IFileDownloaderClient) Naming.lookup(clientEndPoint);
 
-                    FileReceiverSocketThread receiverSocketThread = new FileReceiverSocketThread(new ClientDetails(Utility.getIP(), this.port),
+                    ClientDetails recieverClientDetails = new ClientDetails(Utility.getIP(), this.port);
+                    FileReceiverSocketThread receiverSocketThread = new FileReceiverSocketThread(recieverClientDetails,
                             downloadQueueItem.getFilename());
                     receiverSocketThread.start();
-                    client_stub.requestFileSend(clientDetails, downloadQueueItem.getFilename());
+                    client_stub.requestFileSend(recieverClientDetails, downloadQueueItem.getFilename());
                     receiverSocketThread.join();
                 }
             } catch (IOException e) {
@@ -81,5 +84,9 @@ public class FileReceiverThread implements Runnable {
                 System.out.println("Thread" + threadid + ": " + e.getMessage());
             }
         }
+    }
+
+    private int computeWaitTime(int load, ClientDetails clientDetails) {
+        return 0;
     }
 }
