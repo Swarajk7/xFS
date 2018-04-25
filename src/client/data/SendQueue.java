@@ -57,21 +57,21 @@ public class SendQueue {
 
 
 
-    public static long getExpectedDownloadTime(int bandwidth, ClientDetails receiver, String filename){
-        int downloadTime = waitTime/getMaxSupportedConcurrentSend();
-        try{
+    public static long getExpectedDownloadTime(int bandwidth, ClientDetails receiver, String filename) {
+        int downloadTime = waitTime / getMaxSupportedConcurrentSend();
+        try {
 
-        int minBandwidth = Math.min(bandwidth,MyInformation.getBandwidth());
+            int minBandwidth = Math.min(bandwidth, MyInformation.getBandwidth());
 
-        ConfigManager configManager = ConfigManager.create();
-        String filepath = FileHandler.getFilePathForFileName(filename);
-        String src_dest =  MyInformation.getMyInformation().getClientId() + "-" + receiver.getClientId();
-        int latency = configManager.getIntegerValue(src_dest);
-        downloadTime += latency;
-        downloadTime += getFileSizeInMb(filepath) / minBandwidth;
-        }catch (Exception exception) {
+            ConfigManager configManager = ConfigManager.create();
+            String filepath = FileHandler.getFilePathForFileName(filename);
+            String src_dest = MyInformation.getMyInformation().getClientId() + "-" + receiver.getClientId();
+            int latency = configManager.getIntegerValue(src_dest);
+            downloadTime += latency;
+            downloadTime += getFileSizeInMb(filepath) / minBandwidth;
+        } catch (Exception exception) {
             System.out.println("Missing Latency data. Setting to a default.");
-            downloadTime = 100000000;
+            downloadTime = 3000;
         }
         return downloadTime;
     }

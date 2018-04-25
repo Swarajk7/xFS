@@ -88,9 +88,9 @@ public class FileDownloadThread implements Runnable {
                         } catch (Exception ignored) {
                         }
                     }
-
                     if (minSeenYet == Integer.MAX_VALUE)
-                        minSeenYet = 10000;
+                        minSeenYet = 120;
+                    minSeenYet = Math.max(120, minSeenYet); //default timeout 2 mins.
                     if (chosenClientDetails == null) {
                         if (alreadyRequested != null) {
                             chosenClientDetails = alreadyRequested;
@@ -111,14 +111,9 @@ public class FileDownloadThread implements Runnable {
                             downloadQueueItem.getFilename(), (int) minSeenYet * 3);
                     receiverSocketThread.start();
                     final boolean[] isCompleted = {true};
-                    receiverSocketThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                        @Override
-                        public void uncaughtException(Thread t, Throwable e) {
-                            isCompleted[0] = false;
-                        }
-                    });
+                    receiverSocketThread.setUncaughtExceptionHandler((t, e) -> isCompleted[0] = false);
                     // request for file send.
-                    client_stub.requestFileSend(MyInformation.getBandwidth(), recieverClientDetails, downloadQueueItem.getFilename(),minSeenYet);
+                    client_stub.requestFileSend(MyInformation.getBandwidth(), recieverClientDetails, downloadQueueItem.getFilename(), minSeenYet);
                     // wait for file to be received.
                     receiverSocketThread.join();
 

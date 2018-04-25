@@ -15,6 +15,7 @@ public class FileReceiverSocketThread extends Thread implements Runnable {
         this.filename = filename;
         this.ip = receiverClientDetails.getIp();
         this.socketTimeOutInSeconds = socketTimeOut;
+        System.out.println(socketTimeOutInSeconds);
     }
 
     @Override
