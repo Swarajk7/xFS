@@ -5,6 +5,7 @@ import client.FileHandler;
 import client.data.MyInformation;
 import client.data.SendQueueItem;
 import client.data.SendQueue;
+import common.ConfigManager;
 
 import java.io.IOException;
 
@@ -31,11 +32,13 @@ public class FileSenderThread implements Runnable {
                     System.out.println("Thread Name:" + this.toString() + " " + ex.getMessage());
                 }
             } else {
-                if(item.isExpired()) continue;
+                if (item.isExpired()) continue;
                 FileDownloader downloader = new FileDownloader();
                 try {
                     String path = FileHandler.getFilePathForFileName(item.getFilename());
-                    downloader.send(item.getIp(), item.getPort(), path);
+                    ConfigManager configManager = ConfigManager.create();
+                    boolean shouldFlip = Boolean.parseBoolean(configManager.getValue(ConfigManager.SHOULD_CORRUPT));
+                    downloader.send(item.getIp(), item.getPort(), path, shouldFlip);
                 } catch (IOException e) {
                     System.out.println("Thread Name:" + this.toString() + " " + e.getMessage());
                 } catch (Exception e) {

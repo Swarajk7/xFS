@@ -9,7 +9,7 @@ import java.net.Socket;
 
 // takenFrom: https://stackoverflow.com/questions/9520911/java-sending-and-receiving-file-byte-over-sockets
 public class FileDownloader {
-    public void send(String host, int port, String pathforthefiletosend) throws IOException {
+    public void send(String host, int port, String pathforthefiletosend,boolean shouldCorrupt) throws IOException {
 
         Socket socket = new Socket(host, port);
 
@@ -22,6 +22,7 @@ public class FileDownloader {
 
         int count;
         while ((count = in.read(bytes)) > 0) {
+            if (shouldCorrupt) bytes[0] = 1;
             out.write(bytes, 0, count);
         }
 

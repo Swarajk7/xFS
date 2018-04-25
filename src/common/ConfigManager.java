@@ -17,6 +17,7 @@ public class ConfigManager {
     public static final String NUMBER_OF_UPLOAD_THREADS = "numberofuploadthreads";
     public static final String BASE_PATH = "basepath";
     public static final String CLIENT_BINDING_NAME = "bindingnameforclient";
+    public static final String SHOULD_CORRUPT = "corrupt";
 
     //fix below line for better lookup.. don't hardcode
     private static String filename = "C:\\Users\\sk111\\IdeaProjects\\xFS\\src\\server_config.properties";
