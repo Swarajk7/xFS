@@ -2,6 +2,7 @@ package client.threads;
 
 import client.FileDownloader;
 import client.FileHandler;
+import client.data.MyInformation;
 import client.data.SendQueueItem;
 import client.data.SendQueue;
 
@@ -30,10 +31,6 @@ public class FileSenderThread implements Runnable {
                     System.out.println("Thread Name:" + this.toString() + " " + ex.getMessage());
                 }
             } else {
-                /*
-                What if download fails?
-                What to do?
-                 */
                 FileDownloader downloader = new FileDownloader();
                 try {
                     String path = FileHandler.getFilePathForFileName(item.getFilename());

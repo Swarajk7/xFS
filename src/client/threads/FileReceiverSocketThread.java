@@ -7,24 +7,23 @@ import model.ClientDetails;
 import java.io.IOException;
 
 public class FileReceiverSocketThread extends Thread implements Runnable {
-    private int port;
+    private int port, socketTimeOutInSeconds;
     private String filename, ip;
 
-    public FileReceiverSocketThread(ClientDetails receiverClientDetails, String filename) {
+    public FileReceiverSocketThread(ClientDetails receiverClientDetails, String filename, int socketTimeOut) {
         this.port = receiverClientDetails.getPort();
         this.filename = filename;
         this.ip = receiverClientDetails.getIp();
+        this.socketTimeOutInSeconds = socketTimeOut;
     }
 
     @Override
     public void run() {
         FileDownloader fileDownloader = new FileDownloader();
         try {
-            fileDownloader.download(port, FileHandler.getFilePathForFileName(filename));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+            fileDownloader.download(port, FileHandler.getFilePathForFileName(filename), socketTimeOutInSeconds);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException();
         }
     }
 }

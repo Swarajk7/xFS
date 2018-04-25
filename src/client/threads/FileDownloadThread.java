@@ -65,7 +65,7 @@ public class FileDownloadThread implements Runnable {
                     // Call each client for load.
                     /* todo: use retry count and last download attempt details to decide, whether to stop the download. */
 
-                    int minSeenYet = Integer.MAX_VALUE;
+                    long minSeenYet = Integer.MAX_VALUE;
                     ClientDetails alreadyRequested = null;
                     for (ClientDetails clientDetails : clientList) {
                         if (clientDetails.getIp().equals(MyInformation.getMyInformation().getIp()) && clientDetails.getPort() == MyInformation.getMyInformation().getPort())
@@ -83,11 +83,14 @@ public class FileDownloadThread implements Runnable {
                             if ((waittime < minSeenYet) &&
                                     (!clientDetails.toString().equals(MyInformation.getMyInformation().toString()))) {
                                 chosenClientDetails = clientDetails;
+                                minSeenYet = waittime;
                             }
                         } catch (Exception ignored) {
                         }
                     }
 
+                    if (minSeenYet == Integer.MAX_VALUE)
+                        minSeenYet = 10000;
                     if (chosenClientDetails == null) {
                         if (alreadyRequested != null) {
                             chosenClientDetails = alreadyRequested;
@@ -105,12 +108,22 @@ public class FileDownloadThread implements Runnable {
                     // start socket for download.
                     ClientDetails recieverClientDetails = new ClientDetails(Utility.getIP(), this.port, MyInformation.getMyInformation().getClientId());
                     FileReceiverSocketThread receiverSocketThread = new FileReceiverSocketThread(recieverClientDetails,
-                            downloadQueueItem.getFilename());
+                            downloadQueueItem.getFilename(), (int) minSeenYet * 3);
                     receiverSocketThread.start();
+                    final boolean[] isCompleted = {true};
+                    receiverSocketThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(Thread t, Throwable e) {
+                            isCompleted[0] = false;
+                        }
+                    });
                     // request for file send.
                     client_stub.requestFileSend(MyInformation.getBandwidth(), recieverClientDetails, downloadQueueItem.getFilename());
                     // wait for file to be received.
                     receiverSocketThread.join();
+
+                    if (isCompleted[0] == false)
+                        throw new Exception("Socket TImed Out!");
                     // verify checksum.
                     if (!client_stub.getCheckSum(downloadQueueItem.getFilename()).equals(FileHandler.calculateCheckSum(downloadQueueItem.getFilename()))) {
                         System.out.println(client_stub.getCheckSum(downloadQueueItem.getFilename()));
@@ -131,6 +144,7 @@ public class FileDownloadThread implements Runnable {
                 // If file already exists, don't download.
                 if (FileHandler.doesFileExists(downloadQueueItem.getFilename())) {
                     //delete the file.
+                    System.out.println("Deleting File.");
                     FileHandler.deleteFile(downloadQueueItem.getFilename());
                 }
                 // check if retry count is less than 3.
@@ -143,9 +157,5 @@ public class FileDownloadThread implements Runnable {
                     System.out.println("Download Failed after 3 tries. File name: " + downloadQueueItem.getFilename());
             }
         }
-    }
-
-    private int computeWaitTime(int load, ClientDetails clientDetails) {
-        return 0;
     }
 }
