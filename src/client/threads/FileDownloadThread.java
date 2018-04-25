@@ -12,6 +12,7 @@ import model.ClientDetails;
 import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileDownloadThread implements Runnable {
@@ -120,8 +121,10 @@ public class FileDownloadThread implements Runnable {
                 }
                 // check if retry count is less than 3.
                 if (downloadQueueItem.getRetryCount() < 3) {
+                    ArrayList<ClientDetails> lastRetryClient = (ArrayList<ClientDetails>)downloadQueueItem.getLastRetryClient().clone();
+                    lastRetryClient.add(chosenClientDetails);
                     DownloadQueue.addDownloadRequestToQueue(new DownloadQueueItem(downloadQueueItem.getFilename(),
-                            downloadQueueItem.getRetryCount() + 1, chosenClientDetails));
+                            downloadQueueItem.getRetryCount() + 1, lastRetryClient));
                 } else
                     System.out.println("Download Failed after 3 tries. File name: " + downloadQueueItem.getFilename());
             }
