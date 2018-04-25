@@ -48,7 +48,7 @@ public class PingServerThread implements Runnable {
                     System.out.println("Updated Server With number of Files = " + files.length);
                 }
             } catch (Exception ex) {
-                System.out.println("Server is Down. " + ex.getMessage());
+                System.out.println("Server is Down. ");
                 shouldUpdateServerWithListOfFiles = true;
             }
 

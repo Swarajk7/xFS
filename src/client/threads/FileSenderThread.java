@@ -41,7 +41,7 @@ public class FileSenderThread implements Runnable {
                 } catch (IOException e) {
                     System.out.println("Thread Name:" + this.toString() + " " + e.getMessage());
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("File Send Failed.!! - Cause: " + e.getMessage());
                 }
                 SendQueue.finishSendingItem();
             }

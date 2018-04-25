@@ -8,8 +8,9 @@ public class ClientDetails implements Serializable {
     private String clientId;
 
     public ClientDetails(String s, int i) {
-        ip=s;
-        port=i;
+        ip = s;
+        port = i;
+        clientId = "";
     }
 
     public ClientDetails(String s, int i, String cId) {
@@ -40,7 +41,7 @@ public class ClientDetails implements Serializable {
 
     @Override
     public String toString() {
-        return getIp() + ":" + getPort();
+        return getIp() + ":" + getPort() + ":" + clientId;
     }
 
     @Override

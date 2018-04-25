@@ -57,7 +57,7 @@ public class FileDownloadThread implements Runnable {
                     IFileInformationServer server_stub = (IFileInformationServer) Naming.lookup(endPoint);
                     List<ClientDetails> clientList = server_stub.find(downloadQueueItem.getFilename());
 
-                    if(clientList.size() == 0) {
+                    if (clientList.size() == 0) {
                         System.out.println("File not found. File Name: " + downloadQueueItem.getFilename());
                         continue;
                     }
@@ -67,16 +67,18 @@ public class FileDownloadThread implements Runnable {
 
                     int minSeenYet = Integer.MAX_VALUE;
                     ClientDetails alreadyRequested = null;
-                    for (ClientDetails clientDetails : clientList)
-                        try {
-                        if(downloadQueueItem.getLastRetryClient().contains(clientDetails) && alreadyRequested == null){
-                            alreadyRequested = clientDetails;
+                    for (ClientDetails clientDetails : clientList) {
+                        if (clientDetails.getIp().equals(MyInformation.getMyInformation().getIp()) && clientDetails.getPort() == MyInformation.getMyInformation().getPort())
                             continue;
-                        }
+                        try {
+                            if (downloadQueueItem.getLastRetryClient().contains(clientDetails) && alreadyRequested == null) {
+                                alreadyRequested = clientDetails;
+                                continue;
+                            }
                             String clientEndPoint = Utility.getRMIEndpoint(clientDetails.getIp(), clientDetails.getPort(),
                                     configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
                             IFileDownloaderClient client_stub = (IFileDownloaderClient) Naming.lookup(clientEndPoint);
-                            long waittime = client_stub.getLoad(MyInformation.getBandwidth(),MyInformation.getMyInformation(),downloadQueueItem.getFilename());
+                            long waittime = client_stub.getLoad(MyInformation.getBandwidth(), MyInformation.getMyInformation(), downloadQueueItem.getFilename());
                             // for failed cases, don't download from yourself.
                             if ((waittime < minSeenYet) &&
                                     (!clientDetails.toString().equals(MyInformation.getMyInformation().toString()))) {
@@ -84,14 +86,12 @@ public class FileDownloadThread implements Runnable {
                             }
                         } catch (Exception ignored) {
                         }
+                    }
 
-
-
-                    if(chosenClientDetails == null) {
-                        if(alreadyRequested != null){
+                    if (chosenClientDetails == null) {
+                        if (alreadyRequested != null) {
                             chosenClientDetails = alreadyRequested;
-                        }
-                        else{
+                        } else {
                             System.out.println("No client is available. File Name: " + downloadQueueItem.getFilename());
                             continue;
                         }
@@ -108,7 +108,7 @@ public class FileDownloadThread implements Runnable {
                             downloadQueueItem.getFilename());
                     receiverSocketThread.start();
                     // request for file send.
-                    client_stub.requestFileSend(MyInformation.getBandwidth(),recieverClientDetails, downloadQueueItem.getFilename());
+                    client_stub.requestFileSend(MyInformation.getBandwidth(), recieverClientDetails, downloadQueueItem.getFilename());
                     // wait for file to be received.
                     receiverSocketThread.join();
                     // verify checksum.
@@ -121,7 +121,7 @@ public class FileDownloadThread implements Runnable {
                     try {
                         // tell server you have a new file to share.
                         server_stub.updateList(MyInformation.getMyInformation(), new String[]{downloadQueueItem.getFilename()});
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
 
                     }
                     System.out.println("Download Successful. Filename: " + downloadQueueItem.getFilename());
@@ -129,7 +129,7 @@ public class FileDownloadThread implements Runnable {
             } catch (Exception e) {
                 System.out.println("Thread" + threadid + ": " + e.getMessage());
                 // If file already exists, don't download.
-                if(FileHandler.doesFileExists(downloadQueueItem.getFilename())) {
+                if (FileHandler.doesFileExists(downloadQueueItem.getFilename())) {
                     //delete the file.
                     FileHandler.deleteFile(downloadQueueItem.getFilename());
                 }

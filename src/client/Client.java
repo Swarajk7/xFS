@@ -29,7 +29,7 @@ public class Client {
         try {
             setBasePath(Utility.parseAndGetClientId(args));
             int port = Utility.parseAndGetPortNumber(args);
-            MyInformation.setMyInformation(new ClientDetails(Utility.getIP(), port,Utility.parseAndGetClientId(args)));
+            MyInformation.setMyInformation(new ClientDetails(Utility.getIP(), port, Utility.parseAndGetClientId(args)));
             new PingServerThread(port);
             for (int i = 0; i < SendQueue.getMaxSupportedConcurrentSend(); i++) {
                 new FileSenderThread(i);
@@ -38,10 +38,13 @@ public class Client {
             startRMIServer(port);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
-                System.out.println("Enter FileName to Download?");
-                String filename = reader.readLine();
-                DownloadQueue.addDownloadRequestToQueue(new DownloadQueueItem(filename));
-                System.out.println("File: " + filename + " is added to queue.");
+                System.out.println("Enter FileNames(comma separated) to Download?");
+                String filenamelist = reader.readLine();
+                String[] filenames = filenamelist.split(",", -1);
+                for (String filename : filenames) {
+                    DownloadQueue.addDownloadRequestToQueue(new DownloadQueueItem(filename));
+                    System.out.println("File: " + filename + " is added to queue.");
+                }
             }
         } catch (IOException e) {
             System.out.println("Check if Client is able to access the config file.");

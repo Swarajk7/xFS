@@ -70,7 +70,7 @@ public class SendQueue {
         downloadTime += latency;
         downloadTime += getFileSizeInMb(filepath) / minBandwidth;
         }catch (Exception exception) {
-            System.out.println("Not able to read config file");
+            System.out.println("Missing Latency data. Setting to a default.");
             downloadTime = 100000000;
         }
         return downloadTime;
@@ -79,9 +79,11 @@ public class SendQueue {
     public static SendQueueItem getItemToSend() {
         SendQueueItem item = sendQueue.poll();
         onGoingSends.incrementAndGet();
-        ClientDetails receiver  = new ClientDetails(item.getIp(),item.getPort(),item.getClientId());
-        long expectedTime = getExpectedDownloadTime(item.bandwidth, receiver,  item.filename);
-        waitTime -= expectedTime;
+        if (item != null) {
+            ClientDetails receiver = new ClientDetails(item.getIp(), item.getPort(), item.getClientId());
+            long expectedTime = getExpectedDownloadTime(item.bandwidth, receiver, item.filename);
+            waitTime -= expectedTime;
+        }
         return item;
     }
 
