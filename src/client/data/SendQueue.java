@@ -57,26 +57,21 @@ public class SendQueue {
 
 
 
-    public static long getExpectedDownloadTime(int bandwidth, ClientDetails receiver, String filename){
-        //considers the approx time for one of the threads to get free
-        int downloadTime = waitTime/getMaxSupportedConcurrentSend();
-        try{
-        // check whether there are any free threads
-        if(maxConcurrentSend - onGoingSends.get() > 0){
-            downloadTime = 0;
-        }
-        int minBandwidth = Math.min(bandwidth,MyInformation.getBandwidth());
+    public static long getExpectedDownloadTime(int bandwidth, ClientDetails receiver, String filename) {
+        int downloadTime = waitTime / getMaxSupportedConcurrentSend();
+        try {
 
-        ConfigManager configManager = ConfigManager.create();
-        String filepath = FileHandler.getFilePathForFileName(filename);
-        String src_dest =  MyInformation.getMyInformation().getClientId() + "-" + receiver.getClientId();
-        int latency = configManager.getIntegerValue(src_dest);
-        // latency is in ms
-        downloadTime += latency/1000;
-        downloadTime += getFileSizeInMb(filepath) / minBandwidth;
-        }catch (Exception exception) {
+            int minBandwidth = Math.min(bandwidth, MyInformation.getBandwidth());
+
+            ConfigManager configManager = ConfigManager.create();
+            String filepath = FileHandler.getFilePathForFileName(filename);
+            String src_dest = MyInformation.getMyInformation().getClientId() + "-" + receiver.getClientId();
+            int latency = configManager.getIntegerValue(src_dest);
+            downloadTime += latency;
+            downloadTime += getFileSizeInMb(filepath) / minBandwidth;
+        } catch (Exception exception) {
             System.out.println("Missing Latency data. Setting to a default.");
-            downloadTime = 100000000;
+            downloadTime = 3000;
         }
         return downloadTime;
     }

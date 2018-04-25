@@ -62,9 +62,10 @@ public class Client {
         Naming.rebind(Utility.getRMIEndpoint(Utility.getIP(), port, ConfigManager.create().getValue(ConfigManager.CLIENT_BINDING_NAME)), stub);
     }
 
-    private static void setBasePath(String clientid) throws IOException {
+    private static void setBasePath(String clientid) throws Exception {
         ConfigManager configManager = ConfigManager.create();
         String filepath = configManager.getValue(ConfigManager.BASE_PATH) + clientid;
         FileHandler.setBasepath(filepath);
+        FileHandler.createBasePath();
     }
 }

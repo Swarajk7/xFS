@@ -85,4 +85,14 @@ public class FileHandler {
 
         }
     }
+
+    public static void createBasePath() throws Exception {
+        try {
+            File file = new File(getBasePath());
+            if (!file.exists())
+                file.mkdir();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
