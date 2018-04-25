@@ -4,8 +4,10 @@ import model.ClientDetails;
 
 public class SendQueueItem extends ClientDetails {
     String filename;
-    public SendQueueItem(String s, int i, String filename) {
-        super(s, i);
+    int bandwidth;
+    public SendQueueItem(int bandwidth, String s, int i, String clientId, String filename) {
+        super(s, i, clientId);
+        this.bandwidth = bandwidth;
         this.filename = filename;
     }
 

@@ -1,6 +1,10 @@
 package client.data;
 
+import client.FileHandler;
 import common.ConfigManager;
+import model.ClientDetails;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -10,7 +14,7 @@ public class SendQueue {
     private static Queue<SendQueueItem> sendQueue;
     private static int maxConcurrentSend;
     private static AtomicInteger onGoingSends;
-    private int waitTime = 0;
+    private static int waitTime ;
 
     static {
         try {
@@ -18,6 +22,7 @@ public class SendQueue {
             maxConcurrentSend = configManager.getIntegerValue(ConfigManager.NUMBER_OF_UPLOAD_THREADS);
             sendQueue = new ConcurrentLinkedQueue<>();
             onGoingSends = new AtomicInteger();
+
         } catch (IOException exception) {
             System.out.println("Not able to read config file");
             System.exit(1);
@@ -36,11 +41,47 @@ public class SendQueue {
 
     public static void addSendRequestToQueue(SendQueueItem item) {
         sendQueue.add(item);
+        ClientDetails receiver  = new ClientDetails(item.getIp(),item.getPort(),item.getClientId());
+        long expectedTime = getExpectedDownloadTime(item.bandwidth, receiver,  item.filename);
+        waitTime += expectedTime;
+    }
+
+    public static long getFileSizeInMb(String filepath){
+        File file = new File(filepath);
+        long fileSizeInBytes = file.length();
+        long fileSizeInKB = fileSizeInBytes / 1024;
+        long fileSizeInMB = fileSizeInKB / 1024;
+
+        return fileSizeInMB;
+    }
+
+
+
+    public static long getExpectedDownloadTime(int bandwidth, ClientDetails receiver, String filename){
+        int downloadTime = waitTime/getMaxSupportedConcurrentSend();
+        try{
+
+        int minBandwidth = Math.min(bandwidth,MyInformation.getBandwidth());
+
+        ConfigManager configManager = ConfigManager.create();
+        String filepath = FileHandler.getFilePathForFileName(filename);
+        String src_dest =  MyInformation.getMyInformation().getClientId() + "-" + receiver.getClientId();
+        int latency = configManager.getIntegerValue(src_dest);
+        downloadTime += latency;
+        downloadTime += getFileSizeInMb(filepath) / minBandwidth;
+        }catch (Exception exception) {
+            System.out.println("Not able to read config file");
+            downloadTime = 100000000;
+        }
+        return downloadTime;
     }
 
     public static SendQueueItem getItemToSend() {
         SendQueueItem item = sendQueue.poll();
         onGoingSends.incrementAndGet();
+        ClientDetails receiver  = new ClientDetails(item.getIp(),item.getPort(),item.getClientId());
+        long expectedTime = getExpectedDownloadTime(item.bandwidth, receiver,  item.filename);
+        waitTime -= expectedTime;
         return item;
     }
 

@@ -68,7 +68,7 @@ public class FileDownloadThread implements Runnable {
                             String clientEndPoint = Utility.getRMIEndpoint(clientDetails.getIp(), clientDetails.getPort(),
                                     configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
                             IFileDownloaderClient client_stub = (IFileDownloaderClient) Naming.lookup(clientEndPoint);
-                            int waittime = computeWaitTime(client_stub.getLoad(), clientDetails);
+                            long waittime = client_stub.getLoad(MyInformation.getBandwidth(),MyInformation.getMyInformation(),downloadQueueItem.getFilename());
                             // for failed cases, don't download from yourself.
                             if ((waittime < minSeenYet) &&
                                     (!clientDetails.toString().equals(MyInformation.getMyInformation().toString()))) {
@@ -88,12 +88,12 @@ public class FileDownloadThread implements Runnable {
                     IFileDownloaderClient client_stub = (IFileDownloaderClient) Naming.lookup(clientEndPoint);
 
                     // start socket for download.
-                    ClientDetails recieverClientDetails = new ClientDetails(Utility.getIP(), this.port);
+                    ClientDetails recieverClientDetails = new ClientDetails(Utility.getIP(), this.port, MyInformation.getMyInformation().getClientId());
                     FileReceiverSocketThread receiverSocketThread = new FileReceiverSocketThread(recieverClientDetails,
                             downloadQueueItem.getFilename());
                     receiverSocketThread.start();
                     // request for file send.
-                    client_stub.requestFileSend(recieverClientDetails, downloadQueueItem.getFilename());
+                    client_stub.requestFileSend(MyInformation.getBandwidth(),recieverClientDetails, downloadQueueItem.getFilename());
                     // wait for file to be received.
                     receiverSocketThread.join();
                     // verify checksum.

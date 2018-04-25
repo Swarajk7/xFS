@@ -29,7 +29,7 @@ public class Client {
         try {
             setBasePath(Utility.parseAndGetClientId(args));
             int port = Utility.parseAndGetPortNumber(args);
-            MyInformation.setMyInformation(new ClientDetails(Utility.getIP(), port));
+            MyInformation.setMyInformation(new ClientDetails(Utility.getIP(), port,Utility.parseAndGetClientId(args)));
             new PingServerThread(port);
             for (int i = 0; i < SendQueue.getMaxSupportedConcurrentSend(); i++) {
                 new FileSenderThread(i);

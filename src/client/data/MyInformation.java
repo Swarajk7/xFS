@@ -4,7 +4,8 @@ import model.ClientDetails;
 
 public class MyInformation {
     private static ClientDetails clientDetails;
-    private int bandWidth = 50 + (int)(Math.random() * 20);
+    // Speed in Mbps
+    private static int bandWidth = 50 + (int)(Math.random() * 20);
 
     public static void setMyInformation(ClientDetails clientDetails1) {
         clientDetails = clientDetails1;
@@ -12,5 +13,8 @@ public class MyInformation {
 
     public static ClientDetails getMyInformation() {
         return clientDetails;
+    }
+    public static int getBandwidth() {
+        return bandWidth;
     }
 }

@@ -1,6 +1,7 @@
 package client.rmi;
 
 import client.FileHandler;
+import client.data.MyInformation;
 import client.data.SendQueueItem;
 import client.data.SendQueue;
 import common.IFileDownloaderClient;
@@ -21,11 +22,11 @@ public class FileDownloaderClient extends UnicastRemoteObject implements IFileDo
     }
 
     @Override
-    public void requestFileSend(ClientDetails clientDetails, String filename) throws RemoteException {
+    public void requestFileSend(int bandwidth, ClientDetails clientDetails, String filename) throws RemoteException {
         try {
             int eta = 15;
 
-            SendQueue.addSendRequestToQueue(new SendQueueItem(clientDetails.getIp(), clientDetails.getPort(), filename));
+            SendQueue.addSendRequestToQueue(new SendQueueItem(bandwidth,clientDetails.getIp(), clientDetails.getPort(),clientDetails.getClientId(), filename));
             // Here we can send the checkSum.
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -44,9 +45,9 @@ public class FileDownloaderClient extends UnicastRemoteObject implements IFileDo
     }
 
 
-    public int getLoad() throws RemoteException {
+    public long getLoad(int bandwidth, ClientDetails receiver, String filename) throws RemoteException {
         try {
-            return SendQueue.getOnGoingSends();
+            return SendQueue.getExpectedDownloadTime(bandwidth, receiver, filename);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             throw new RemoteException(ex.getMessage());
