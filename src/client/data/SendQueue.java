@@ -61,6 +61,7 @@ public class SendQueue {
         //considers the approx time for one of the threads to get free
         int downloadTime = waitTime/getMaxSupportedConcurrentSend();
         try{
+        // check whether there are any free threads
         if(maxConcurrentSend - onGoingSends.get() > 0){
             downloadTime = 0;
         }
