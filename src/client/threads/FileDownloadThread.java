@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FileDownloadThread implements Runnable {
     private int threadid, port;
@@ -62,10 +64,15 @@ public class FileDownloadThread implements Runnable {
 
                     // Call each client for load.
                     /* todo: use retry count and last download attempt details to decide, whether to stop the download. */
-                    /* todo: at least one of the clients should respond. don't catch for any exception.*/
+
                     int minSeenYet = Integer.MAX_VALUE;
+                    ClientDetails alreadyRequested = null;
                     for (ClientDetails clientDetails : clientList)
                         try {
+                        if(downloadQueueItem.getLastRetryClient().contains(clientDetails) && alreadyRequested == null){
+                            alreadyRequested = clientDetails;
+                            continue;
+                        }
                             String clientEndPoint = Utility.getRMIEndpoint(clientDetails.getIp(), clientDetails.getPort(),
                                     configManager.getValue(ConfigManager.CLIENT_BINDING_NAME));
                             IFileDownloaderClient client_stub = (IFileDownloaderClient) Naming.lookup(clientEndPoint);
@@ -78,9 +85,16 @@ public class FileDownloadThread implements Runnable {
                         } catch (Exception ignored) {
                         }
 
+
+
                     if(chosenClientDetails == null) {
-                        System.out.println("No client is available. File Name: " + downloadQueueItem.getFilename());
-                        continue;
+                        if(alreadyRequested != null){
+                            chosenClientDetails = alreadyRequested;
+                        }
+                        else{
+                            System.out.println("No client is available. File Name: " + downloadQueueItem.getFilename());
+                            continue;
+                        }
                     }
 
                     //Using the chosen client build the rmi stub.
@@ -121,7 +135,7 @@ public class FileDownloadThread implements Runnable {
                 }
                 // check if retry count is less than 3.
                 if (downloadQueueItem.getRetryCount() < 3) {
-                    ArrayList<ClientDetails> lastRetryClient = (ArrayList<ClientDetails>)downloadQueueItem.getLastRetryClient().clone();
+                    Set<ClientDetails> lastRetryClient = new HashSet<>(downloadQueueItem.getLastRetryClient());
                     lastRetryClient.add(chosenClientDetails);
                     DownloadQueue.addDownloadRequestToQueue(new DownloadQueueItem(downloadQueueItem.getFilename(),
                             downloadQueueItem.getRetryCount() + 1, lastRetryClient));

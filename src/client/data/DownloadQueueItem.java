@@ -6,15 +6,16 @@ import java.util.*;
 public class DownloadQueueItem {
     private String filename;
     private int retryCount;
-    private ArrayList<ClientDetails> lastRetryClient;
+    private Set<ClientDetails> lastRetryClient;
+
 
     public DownloadQueueItem(String fname) {
         this.filename = fname;
         this.retryCount = 0;
-        this.lastRetryClient =new ArrayList<ClientDetails>();
+        this.lastRetryClient =new HashSet<ClientDetails>();
     }
 
-    public DownloadQueueItem(String fname, int retryCount, ArrayList<ClientDetails> lastRetryClient) {
+    public DownloadQueueItem(String fname, int retryCount, Set<ClientDetails> lastRetryClient) {
         this.filename = fname;
         this.retryCount = retryCount;
         this.lastRetryClient = lastRetryClient;
@@ -28,5 +29,5 @@ public class DownloadQueueItem {
         return retryCount;
     }
 
-    public ArrayList<ClientDetails> getLastRetryClient(){ return lastRetryClient;}
+    public Set<ClientDetails> getLastRetryClient(){ return lastRetryClient;}
 }
