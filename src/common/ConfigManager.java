@@ -19,8 +19,8 @@ public class ConfigManager {
     public static final String CLIENT_BINDING_NAME = "bindingnameforclient";
     public static final String SHOULD_CORRUPT = "corrupt";
 
-    //fix below line for better lookup.. don't hardcode
-    private static String filename = "C:\\Users\\sk111\\IdeaProjects\\xFS\\src\\server_config.properties";
+
+    private static String filename = "server_config.properties";
     private Properties prop;
     private static ConfigManager obj = null;
 
