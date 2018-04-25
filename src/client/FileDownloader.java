@@ -42,7 +42,6 @@ public class FileDownloader {
             socket.setSoTimeout(socketTimeOut*1000);
             in = socket.getInputStream();
             out = new FileOutputStream(pathtostorethedownloadedfile);
-            /* todo: need to set timeout to the socket. */
             byte[] bytes = new byte[16 * 1024];
             int count;
             while ((count = in.read(bytes)) > 0) {

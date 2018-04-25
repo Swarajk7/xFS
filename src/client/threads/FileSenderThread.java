@@ -31,6 +31,7 @@ public class FileSenderThread implements Runnable {
                     System.out.println("Thread Name:" + this.toString() + " " + ex.getMessage());
                 }
             } else {
+                if(item.isExpired()) continue;
                 FileDownloader downloader = new FileDownloader();
                 try {
                     String path = FileHandler.getFilePathForFileName(item.getFilename());

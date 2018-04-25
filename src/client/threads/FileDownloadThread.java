@@ -118,7 +118,7 @@ public class FileDownloadThread implements Runnable {
                         }
                     });
                     // request for file send.
-                    client_stub.requestFileSend(MyInformation.getBandwidth(), recieverClientDetails, downloadQueueItem.getFilename());
+                    client_stub.requestFileSend(MyInformation.getBandwidth(), recieverClientDetails, downloadQueueItem.getFilename(),minSeenYet);
                     // wait for file to be received.
                     receiverSocketThread.join();
 

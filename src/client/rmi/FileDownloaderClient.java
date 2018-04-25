@@ -22,11 +22,10 @@ public class FileDownloaderClient extends UnicastRemoteObject implements IFileDo
     }
 
     @Override
-    public void requestFileSend(int bandwidth, ClientDetails clientDetails, String filename) throws RemoteException {
+    public void requestFileSend(int bandwidth, ClientDetails clientDetails, String filename, long waittime) throws RemoteException {
         try {
-            int eta = 15;
-
-            SendQueue.addSendRequestToQueue(new SendQueueItem(bandwidth,clientDetails.getIp(), clientDetails.getPort(),clientDetails.getClientId(), filename));
+            SendQueue.addSendRequestToQueue(new SendQueueItem(bandwidth,clientDetails.getIp(),
+                    clientDetails.getPort(),clientDetails.getClientId(), filename,waittime));
             // Here we can send the checkSum.
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
